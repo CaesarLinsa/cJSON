@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.15)
+project(cJSON)
+set(CMAKE_CXX_STANDARD 14)
+include_directories(cJSON.h)
+set(SRC_LIST cJSON.c test.c)
+add_executable(cJSON  ${SRC_LIST})
