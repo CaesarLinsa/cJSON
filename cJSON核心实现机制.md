@@ -9,15 +9,19 @@
 ```
 {
         "name": "Jack (\"Bee\") Nimble", 
-        "format": {"type":       "rect", 
-        "width":      1920, 
-        "height":     1080, 
-        "interlace":  false,
-        "frame rate": 24
+        "format": 
+            {
+            "type":       "rect", 
+            "width":      1920, 
+            "height":     1080, 
+            "interlace":  false,
+            "frame rate": 24
+            }
 }
 ```
 ![双向链表](http://7xjfjn.com1.z0.glb.clouddn.com/list.jpg)
-双向链表的每一个节点都是cJSON指针。一个完整的双向链表表示一连串兄弟节点。在示例JSON中，name和format节点组合成一个链表，type，width，height，interlace和frame rate节点组成一个链表。
+双向链表的每一个节点都是cJSON指针。一个完整的双向链表表示一连串兄弟节点。在示例JSON中，name和format节点组合成一个链表，第一个为name，其next为format，
+format中，第一个son为type，其next分别为width，height，interlace和frame rate节点，组成一个链表。
 
 ![JSON树](http://7xjfjn.com1.z0.glb.clouddn.com/tree.jpg)
 JSON树的每一层都是一个双向链表，表示一堆兄弟节点。当前层的所有节点都是当前链表头节点的父节点的子节点。在示例JSON中，type，width，height，interlace和frame rate节点都是format节点的子节点。实线表示节点间有真实的引用关系，而虚线表示逻辑上的引用关系。

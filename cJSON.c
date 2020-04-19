@@ -193,12 +193,14 @@ static const char *parse_string(cJSON *item,const char *str)
 {
 	const char *ptr=str+1;char *ptr2;char *out;int len=0;unsigned uc,uc2;
 	if (*str!='\"') {ep=str;return 0;}	/* not a string! */
-	
-	while (*ptr!='\"' && *ptr && ++len) if (*ptr++ == '\\') ptr++;	/* Skip escaped quotes. */
-	
+    //计算\"xxx\" 字符串中xxx长度
+	while (*ptr!='\"' && *ptr && ++len)
+	    if (*ptr++ == '\\')
+	        ptr++;	/* Skip escaped quotes. */
+	//分配 "xxx" char内存存储,len +1 的原因是会在字符串后面加\0字符
 	out=(char*)cJSON_malloc(len+1);	/* This is how long we need for the string, roughly. */
 	if (!out) return 0;
-	
+	// ptr回到"xxx"字符串的首位置，使用*ptr++，截取字符串到out
 	ptr=str+1;ptr2=out;
 	while (*ptr!='\"' && *ptr)
 	{
@@ -243,6 +245,7 @@ static const char *parse_string(cJSON *item,const char *str)
 	}
 	*ptr2=0;
 	if (*ptr=='\"') ptr++;
+	//cjson对象valuestring复制 out
 	item->valuestring=out;
 	item->type=cJSON_String;
 	return ptr;
@@ -405,13 +408,14 @@ static char *print_value(cJSON *item,int depth,int fmt,printbuffer *p)
 /* Build an array from input text. */
 static const char *parse_array(cJSON *item,const char *value)
 {
+    //"[\"one\", \"two\",\"three\"...]"
 	cJSON *child;
 	if (*value!='[')	{ep=value;return 0;}	/* not an array! */
 
 	item->type=cJSON_Array;
 	value=skip(value+1);
 	if (*value==']') return value+1;	/* empty array. */
-
+    //处理one，其他的根据后面","，遍历为one 添加next cjson节点
 	item->child=child=cJSON_New_Item();
 	if (!item->child) return 0;		 /* memory fail */
 	value=skip(parse_value(child,skip(value)));	/* skip any spacing, get the value. */
@@ -421,6 +425,8 @@ static const char *parse_array(cJSON *item,const char *value)
 	{
 		cJSON *new_item;
 		if (!(new_item=cJSON_New_Item())) return 0; 	/* memory fail */
+		//双向设置child 和new_item，并将new_item指针付给child，这样可以
+		//一直设置其next节点的stringvalue.
 		child->next=new_item;new_item->prev=child;child=new_item;
 		value=skip(parse_value(child,skip(value+1)));
 		if (!value) return 0;	/* memory fail */
@@ -497,14 +503,25 @@ static char *print_array(cJSON *item,int depth,int fmt,printbuffer *p)
 		
 		/* Compose the output array. */
 		*out='[';
+		//ptr临时指针，将ptr指向"xxx"值传给out，
+		//传递完成后，将prt+ = strlen("xxx")后，
+		// *prt=0;清空后，继续传递
 		ptr=out+1;*ptr=0;
 		for (i=0;i<numentries;i++)
 		{
-			tmplen=strlen(entries[i]);memcpy(ptr,entries[i],tmplen);ptr+=tmplen;
-			if (i!=numentries-1) {*ptr++=',';if(fmt)*ptr++=' ';*ptr=0;}
+			tmplen=strlen(entries[i]);
+			memcpy(ptr,entries[i],tmplen);
+			ptr+=tmplen;
+			if (i!=numentries-1) {
+			    *ptr++=',';
+			    if(fmt)
+			        *ptr++=' ';*ptr=0;}
+			//释放内存
 			cJSON_free(entries[i]);
 		}
+		//完成后，释放指向指针指针内存
 		cJSON_free(entries);
+		//传递后，再次清空
 		*ptr++=']';*ptr++=0;
 	}
 	return out;	

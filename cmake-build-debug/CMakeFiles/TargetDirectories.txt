@@ -1,0 +1,3 @@
+/cygdrive/d/C/cJSON/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/cygdrive/d/C/cJSON/cmake-build-debug/CMakeFiles/cJSON.dir
+/cygdrive/d/C/cJSON/cmake-build-debug/CMakeFiles/edit_cache.dir
